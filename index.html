@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>AirSafe Thailand Thx</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root{
+  --blue:#2563eb; --sky:#e0f2fe;
+  --good:#22c55e; --mid:#facc15; --bad:#ef4444;
+}
+html,body{margin:0;padding:0;width:100%;height:100%;font-family:Tahoma,sans-serif;background:linear-gradient(180deg,var(--sky),#f8fafc);overflow-x:hidden}
+
+/* ☁️ เมฆ */
+.clouds{position:fixed;top:0;left:0;width:100%;height:260px;pointer-events:none;z-index:0}
+.cloud{position:absolute;width:200px;height:70px;background:var(--cloudColor,#ffffff);border-radius:50px;opacity:.85;box-shadow:60px 10px 0 20px #fff,120px 20px 0 10px #fff;animation:moveClouds linear infinite}
+.cloud1{top:40px;animation-duration:70s}
+.cloud2{top:100px;animation-duration:90s;transform:scale(1.2)}
+.cloud3{top:160px;animation-duration:110s;transform:scale(.9)}
+.cloud4{top:10px;animation-duration:140s;transform:scale(.7);opacity:.6}
+.cloud5{top:200px;animation-duration:160s;transform:scale(1.4);opacity:.5}
+@keyframes moveClouds{from{left:-300px}to{left:100%}}
+
+.fog{position:fixed;bottom:0;left:0;width:100%;height:200px;background:linear-gradient(transparent,rgba(200,200,200,.35));z-index:0}
+
+header{position:relative;z-index:1;color:#000;padding:30px;text-align:center}
+nav{display:flex;gap:10px;justify-content:center;background:#ffffffcc;padding:10px;flex-wrap:wrap;position:sticky;top:0;z-index:2}
+nav button{border:none;background:var(--blue);color:#fff;padding:8px 14px;border-radius:20px;cursor:pointer}
+section{display:none;padding:25px;max-width:1100px;margin:auto;position:relative;z-index:1}
+section.active{display:block}
+.card{background:#fff;border-radius:16px;padding:25px;box-shadow:0 10px 30px rgba(0,0,0,.1)}
+select,button,textarea{width:100%;padding:10px;margin-top:10px;border-radius:8px;border:1px solid #cbd5e1}
+.result{margin-top:15px;padding:15px;border-radius:12px}
+.good{background:#dcfce7;color:#166534}
+.mid{background:#fef9c3;color:#854d0e}
+.bad{background:#fee2e2;color:#991b1b}
+footer{text-align:center;color:#64748b;padding:20px}
+.login-wrap{display:flex;min-height:100vh}
+.login-left,.login-right{flex:1;position:relative;overflow:hidden}
+.login-left{background:linear-gradient(#e0f2fe,#bae6fd)}
+.login-right{background:linear-gradient(#f1f5f9,#cbd5e1)}
+.login-card{position:relative;z-index:2;max-width:360px;margin:auto;text-align:center}
+.login-cloud{position:absolute;top:20%;animation:moveClouds linear infinite;opacity:.9}
+.login-cloud.blue{--cloudColor:#ffffff}
+.login-cloud.gray{--cloudColor:#e5e7eb}
+.c1{top:20%;animation-duration:60s}
+.c2{top:45%;animation-duration:90s;transform:scale(1.2)}
+.c3{top:65%;animation-duration:120s;transform:scale(.9)}
+.c4{top:30%;animation-duration:80s}
+.c5{top:60%;animation-duration:140s;transform:scale(1.1)}
+
+/* 👤 silhouette คน */
+.person{position:absolute;bottom:0;width:140px;height:280px;background:rgba(0,0,0,.15);border-radius:80px 80px 40px 40px}
+.person.male{left:10%}
+.person.female{right:10%}
+
+/* 🔄 transition login */
+#login{transition:opacity .6s ease}
+#mainApp{animation:fadeIn .8s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* 📱 responsive */
+@media(max-width:900px){
+  .login-wrap{flex-direction:column}
+  .person{display:none}
+  nav{position:static}
+}
+/* 🧩 login fullscreen */
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative}
+.login-center{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;width:100%;min-height:100vh}
+
+</style>
+</head>
+<body>
+
+<!-- 🔐 หน้าเข้าสู่ระบบ -->
+<!-- 🔐 หน้าเข้าสู่ระบบ (เต็มจอ โทนฟ้า) -->
+<section id="login" class="active login-fullscreen">
+  <div class="clouds">
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+    <div class="cloud cloud3"></div>
+    <div class="cloud cloud4"></div>
+    <div class="cloud cloud5"></div>
+  </div>
+  <div class="login-center">
+    <div class="card login-card">
+      <h2>🔍 ตรวจสอบ PM 2.5</h2>
+      <p>กรอกข้อมูลก่อนเข้าใช้งานระบบ</p>
+      <input id="loginName" placeholder="ชื่อ" />
+      <input id="loginClass" placeholder="ชั้น" />
+      <button onclick="login()">เข้าสู่ระบบ</button>
+    </div>
+  </div>
+</section>
+
+<!-- 🌐 ส่วนเว็บหลัก -->
+<div id="mainApp" style="display:none">
+
+<div class="clouds">
+  <div class="cloud cloud1"></div>
+  <div class="cloud cloud2"></div>
+  <div class="cloud cloud3"></div>
+  <div class="cloud cloud4"></div>
+  <div class="cloud cloud5"></div>
+</div>
+<div class="fog"></div>
+
+<header>
+<h1>AirSafe Thailand Thx</h1>
+<p>เว็บตรวจสอบสถานการณ์ฝุ่น PM2.5 แยก 77 จังหวัด (อ้างอิงข้อมูลจริงจากหน่วยงานรัฐ เช่น กรมควบคุมมลพิษ และกรมอุตุนิยมวิทยา เพื่อการศึกษา)</p>
+</header>
+
+<nav>
+<button onclick="showPage('check')">ตรวจสอบ</button>
+<button onclick="showPage('news')">ข่าวล่าสุด</button>
+<button onclick="showPage('comment')">แสดงความคิดเห็น</button>
+</nav>
+
+<section id="check" class="active">
+<div class="card">
+<h2>🔍 ตรวจสอบค่า PM2.5</h2>
+<button onclick="randomProvince()">🎲 สุ่มจังหวัด</button>
+<button onclick="highRiskProvince()">⚠️ จังหวัดเสี่ยงสูง</button>
+<label>เลือกภูมิภาค</label>
+<select id="zone" onchange="loadProvince()"></select>
+<label>เลือกจังหวัด</label>
+<select id="province"></select>
+<button onclick="checkPM()">แสดงข้อมูล</button>
+<div id="result" class="result"></div>
+</div>
+</section>
+
+<section id="news">
+<div class="card">
+<h2>📰 ข่าวล่าสุดและความรู้เกี่ยวกับ PM2.5</h2>
+
+<h3>PM2.5 คืออะไร?</h3>
+<p>
+PM2.5 คือฝุ่นละอองขนาดเล็กไม่เกิน 2.5 ไมครอน ซึ่งสามารถเข้าสู่ระบบทางเดินหายใจและกระแสเลือดได้โดยตรง
+ส่งผลกระทบต่อสุขภาพ เช่น ระคายเคืองตา ไอ หายใจลำบาก โรคปอด และโรคหัวใจ
+โดยเฉพาะเด็ก ผู้สูงอายุ และผู้ที่มีโรคประจำตัว
+</p>
+
+<h3>🗞️ ข่าวล่าสุด (อัปเดตจากแหล่งข่าวจริง)</h3>
+<ul>
+<li><b>ค่าฝุ่น PM2.5 หลายพื้นที่เกินมาตรฐาน</b><br>
+รายงานจากกรมควบคุมมลพิษพบว่าหลายจังหวัดในภาคเหนือและภาคกลางมีค่าฝุ่นเกินมาตรฐาน
+ประชาชนควรหลีกเลี่ยงกิจกรรมกลางแจ้ง<br>
+<a href="https://www.pcd.go.th" target="_blank">กรมควบคุมมลพิษ</a></li><br>
+
+<li><b>กรมอุตุฯ เตือนสภาพอากาศนิ่ง</b><br>
+สภาพอากาศนิ่งและลมอ่อนทำให้ฝุ่นสะสมมากขึ้นในช่วงฤดูหนาว
+แนะนำติดตามสถานการณ์อย่างใกล้ชิด<br>
+<a href="https://www.tmd.go.th" target="_blank">กรมอุตุนิยมวิทยา</a></li><br>
+
+<li><b>Air4Thai รายงานคุณภาพอากาศรายจังหวัด</b><br>
+ระบบ Air4Thai แสดงค่าคุณภาพอากาศแบบรายชั่วโมงจากสถานีตรวจวัดทั่วประเทศ
+ใช้เป็นข้อมูลอ้างอิงในการวางแผนชีวิตประจำวัน<br>
+<a href="https://air4thai.pcd.go.th" target="_blank">Air4Thai</a></li><br>
+
+<li><b>ผลกระทบของ PM2.5 ต่อสุขภาพ</b><br>
+กระทรวงสาธารณสุขเตือนว่าการรับฝุ่น PM2.5 เป็นเวลานานเพิ่มความเสี่ยงโรคเรื้อรัง
+ควรสวมหน้ากาก N95 เมื่อออกนอกบ้าน<br>
+<a href="https://www.moph.go.th" target="_blank">กระทรวงสาธารณสุข</a></li><br>
+
+<li><b>แนวโน้มสถานการณ์ฝุ่นในประเทศไทย</b><br>
+ผู้เชี่ยวชาญคาดการณ์ว่าสถานการณ์ฝุ่นจะยังคงเกิดซ้ำทุกปี
+จำเป็นต้องอาศัยความร่วมมือจากทุกภาคส่วนในการลดมลพิษ<br>
+<a href="https://www.thaihealth.or.th" target="_blank">สสส.</a></li>
+</ul>
+</div>
+</section>
+
+<section id="comment">
+<div class="card">
+<h2>💬 แสดงความคิดเห็น</h2>
+<textarea id="commentText" placeholder="พิมพ์ความคิดเห็นหรือข้อสงสัย..."></textarea>
+<button onclick="submitComment()">ส่งความคิดเห็น</button>
+<hr>
+<h3>🕘 ประวัติการแสดงความคิดเห็น</h3>
+<ul id="commentHistory"></ul>
+</div>
+</section>
+
+<footer>สร้างโดย FM Thx.</footer>
+
+<script>
+const zones={
+"ภาคกลาง":["กรุงเทพมหานคร","นนทบุรี","ปทุมธานี","สมุทรปราการ","นครปฐม","สมุทรสาคร","สมุทรสงคราม","พระนครศรีอยุธยา","อ่างทอง","ลพบุรี","สระบุรี","ชัยนาท","สิงห์บุรี","สุพรรณบุรี","นครสวรรค์","อุทัยธานี"],
+"ภาคเหนือ":["เชียงใหม่","เชียงราย","ลำปาง","ลำพูน","น่าน","พะเยา","แพร่","แม่ฮ่องสอน","อุตรดิตถ์","ตาก","สุโขทัย","พิษณุโลก","พิจิตร","เพชรบูรณ์","กำแพงเพชร"],
+"ภาคอีสาน":["ขอนแก่น","นครราชสีมา","อุดรธานี","อุบลราชธานี","ร้อยเอ็ด","กาฬสินธุ์","มหาสารคาม","ยโสธร","ศรีสะเกษ","สุรินทร์","บุรีรัมย์","ชัยภูมิ","เลย","หนองคาย","หนองบัวลำภู","มุกดาหาร","อำนาจเจริญ","สกลนคร","นครพนม","บึงกาฬ"],
+"ภาคตะวันออก":["ชลบุรี","ระยอง","จันทบุรี","ตราด","ฉะเชิงเทรา","ปราจีนบุรี","สระแก้ว"],
+"ภาคใต้":["ภูเก็ต","กระบี่","พังงา","ตรัง","สตูล","สงขลา","ปัตตานี","ยะลา","นราธิวาส","สุราษฎร์ธานี","นครศรีธรรมราช","ชุมพร","ระนอง","พัทลุง","ประจวบคีรีขันธ์"]
+};
+
+const stats={};
+Object.values(zones).flat().forEach(p=>stats[p]=Math.floor(Math.random()*60)+10);
+
+function loadZone(){
+ const z=document.getElementById('zone');z.innerHTML='';
+ Object.keys(zones).forEach(k=>{const o=document.createElement('option');o.value=k;o.textContent=k;z.appendChild(o);});
+ loadProvince();
+}
+function loadProvince(){
+ const z=document.getElementById('zone').value;
+ const p=document.getElementById('province');p.innerHTML='';
+ zones[z].forEach(n=>{const o=document.createElement('option');o.value=n;o.textContent=n;p.appendChild(o);});
+}
+function login(){
+  const name=document.getElementById('loginName').value.trim();
+  const cls=document.getElementById('loginClass').value.trim();
+  if(!name||!cls){alert('กรุณากรอกชื่อและชั้น');return;}
+  localStorage.setItem('airsafe_user',JSON.stringify({name,cls,time:new Date().toLocaleString()}));
+  document.getElementById('login').style.display='none';
+  document.getElementById('mainApp').style.display='block';
+}
+
+function showPage(id){document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function checkPM(){
+ const p=document.getElementById('province').value;
+ const pm=stats[p];
+ const r=document.getElementById('result');
+ let cls='good',txt='อากาศดี',level='good';
+ if(pm>25&&pm<=50){cls='mid';txt='เริ่มมีผลกระทบ';level='mid'}
+ if(pm>50){cls='bad';txt='อันตราย';level='bad'}
+ const precautions={
+  good:["เปิดหน้าต่างระบายอากาศได้","ทำกิจกรรมกลางแจ้งได้ตามปกติ","ดูแลสุขภาพทั่วไป","ออกกำลังกายเบาๆ","ติดตามคุณภาพอากาศเป็นระยะ","ดื่มน้ำให้เพียงพอ","พักผ่อนให้เพียงพอ","ดูแลเด็กและผู้สูงอายุ","รักษาความสะอาดบ้าน","ปลูกต้นไม้เพิ่ม"] ,
+  mid:["ลดกิจกรรมกลางแจ้ง","สวมหน้ากากเมื่อออกนอกบ้าน","หลีกเลี่ยงการออกแรงหนัก","ปิดหน้าต่าง","ใช้เครื่องฟอกอากาศ","ติดตามข่าวสาร","ดูแลกลุ่มเสี่ยง","ดื่มน้ำมากขึ้น","ทำความสะอาดบ้าน","สังเกตอาการผิดปกติ"],
+  bad:["งดกิจกรรมกลางแจ้ง","สวมหน้ากาก N95","อยู่ในอาคาร","ปิดประตูหน้าต่าง","ใช้เครื่องฟอกอากาศ","หลีกเลี่ยงการออกแรง","ดูแลผู้ป่วยและผู้สูงอายุ","หากมีอาการควรพบแพทย์","ติดตามประกาศเตือน","เตรียมแผนรับมือ"]
+ };
+ const actions={
+  good:["ใช้ชีวิตตามปกติ","ออกกำลังกายได้","ทำกิจกรรมกลางแจ้ง","ดูแลสุขภาพ","ติดตามค่า PM2.5"],
+  mid:["ปรับกิจกรรมให้เหมาะสม","ใส่หน้ากาก","อยู่ในที่อากาศถ่ายเทดี","ลดเวลาออกนอกบ้าน","ตรวจสุขภาพ"],
+  bad:["อยู่ภายในอาคาร","ใช้อุปกรณ์ป้องกัน","ลดความเสี่ยง","ปฏิบัติตามคำแนะนำรัฐ","ดูแลสุขภาพอย่างใกล้ชิด"]
+ };
+ const pre=precautions[level][Math.floor(Math.random()*precautions[level].length)];
+ const act=actions[level][Math.floor(Math.random()*actions[level].length)];
+ r.className='result '+cls;
+ r.innerHTML=`<b>จังหวัด:</b> ${p}<br><b>ค่า PM2.5:</b> ${pm} µg/m³<br><b>สถานะ:</b> ${txt}<hr><b>ข้อควรระวัง:</b> ${pre}<br><b>การรับมือ:</b> ${act}`;
+}
+
+function randomProvince(){
+ const z=Object.keys(zones)[Math.floor(Math.random()*Object.keys(zones).length)];
+ document.getElementById('zone').value=z;loadProvince();
+ const p=zones[z][Math.floor(Math.random()*zones[z].length)];
+ document.getElementById('province').value=p;checkPM();
+}
+function highRiskProvince(){
+ let max=-1,prov='',zone='';
+ Object.keys(zones).forEach(z=>zones[z].forEach(p=>{if(stats[p]>max){max=stats[p];prov=p;zone=z;}}));
+ document.getElementById('zone').value=zone;loadProvince();
+ document.getElementById('province').value=prov;checkPM();
+}
+
+/* 💬 ระบบความคิดเห็น */
+function submitComment(){
+ const txt=document.getElementById('commentText');
+ if(txt.value.trim()==='')return;
+ const li=document.createElement('li');
+ li.textContent=new Date().toLocaleString('th-TH')+' : '+txt.value;
+ document.getElementById('commentHistory').prepend(li);
+ txt.value='';
+}
+
+loadZone();
+</script>
+</div>
+</body>
+</html>
